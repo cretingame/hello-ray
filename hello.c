@@ -44,6 +44,8 @@ int main() {
       rectanglePositionY = 0;
     }
 
+    // NOTE: for collision usage I should use DrawRectangleRec() instead of
+    // DrawRectangle(). CheckCollisionRecs() return true if a collision occurs
     DrawRectangle(ballPositionX, ballPositionY, 2 * ballRadius, 2 * ballRadius,
                   RED);
 
