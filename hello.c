@@ -20,9 +20,26 @@ int main() {
   int rectanglePositionY = 0;
 
   // Ball
-  int ballRadius = 25;
-  int ballPositionX = screenWidth / 2 - ballRadius;
-  int ballPositionY = screenHeight / 2 - ballRadius;
+  const int ballRadius = 25;
+  Vector2 ballCenterPosition = {
+      .x = (float)screenWidth / 2,
+      .y = (float)screenHeight / 2,
+  };
+  Rectangle ball = {
+      .x = ballCenterPosition.x - ballRadius,
+      .y = ballCenterPosition.y - ballRadius,
+      .width = ballRadius * 2,
+      .height = ballRadius * 2,
+  };
+  // INFO: https://fr.wikipedia.org/wiki/Norme_(math%C3%A9matiques)
+  Vector2 ballDirection = {
+      .x = 100,
+      .y = 100,
+  };
+  Vector2 ballDestination = {
+      .x = ballCenterPosition.x + ballDirection.x,
+      .y = ballCenterPosition.y + ballDirection.y,
+  };
 
   InitWindow(screenWidth, screenHeight, "basic window");
 
@@ -37,17 +54,22 @@ int main() {
     DrawText(text, screenWidth / 2 - textWidth / 2,
              screenHeight / 2 - fontSize / 2, fontSize, LIGHTGRAY);
 
-    DrawRectangle(rectanglePositionX, rectanglePositionY, rectangleWidth,
-                  rectangleHeight, BLACK);
+    // Left bar
     rectanglePositionY = rectanglePositionY + 1;
     if (rectanglePositionY > screenHeight) {
       rectanglePositionY = 0;
     }
+    DrawRectangle(rectanglePositionX, rectanglePositionY, rectangleWidth,
+                  rectangleHeight, BLACK);
 
-    // NOTE: for collision usage I should use DrawRectangleRec() instead of
-    // DrawRectangle(). CheckCollisionRecs() return true if a collision occurs
-    DrawRectangle(ballPositionX, ballPositionY, 2 * ballRadius, 2 * ballRadius,
-                  RED);
+    // Ball
+
+    ball.x = ballCenterPosition.x - ballRadius;
+    ball.y = ballCenterPosition.y - ballRadius;
+
+    DrawRectangleRec(ball, GREEN);
+
+    DrawLineV(ballCenterPosition, ballDestination, BLUE);
 
     EndDrawing();
   }
