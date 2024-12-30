@@ -14,26 +14,31 @@ int main() {
       "Hello the text is perfectly centered, but the rectangle not ...";
   int textWidth;
 
-  // Rectangle
-  int rectangleWidth = 50;
-  int rectangleHeight = 150;
-  int rectanglePositionX = 0;
-  int rectanglePositionY = 0;
+  // Left Bar
+  Rectangle leftBar = {
+      .x = 0,
+      .y = 0,
+      .width = 50,
+      .height = 150,
+  };
 
   // Ball
   const int ballRadius = 25;
-  Vector2 ballCenterPosition = {
-      .x = (float)screenWidth / 2,
-      .y = (float)screenHeight / 2,
+  // top left postion
+  Vector2 ballTopLeftPosition = {
+      .x = (float)screenWidth / 2 - ballRadius,
+      .y = (float)screenHeight / 2 - ballRadius,
   };
   Rectangle ball = {
-      .x = ballCenterPosition.x - ballRadius,
-      .y = ballCenterPosition.y - ballRadius,
+      .x = ballTopLeftPosition.x,
+      .y = ballTopLeftPosition.y,
       .width = ballRadius * 2,
       .height = ballRadius * 2,
   };
+  // NOTE: I should create a state machine for collisions
+  Color ballColor = GREEN;
   Vector2 ballDestination = {
-      .x = 100,
+      .x = 45,
       .y = 100,
   };
 
@@ -51,23 +56,28 @@ int main() {
              GetScreenHeight() / 2 - fontSize / 2, fontSize, LIGHTGRAY);
 
     // Left bar
-    rectanglePositionY = rectanglePositionY + 1;
-    if (rectanglePositionY > GetScreenHeight()) {
-      rectanglePositionY = 0;
+    leftBar.y = leftBar.y + 1;
+    if (leftBar.y > GetScreenHeight()) {
+      leftBar.y = 0;
     }
-    DrawRectangle(rectanglePositionX, rectanglePositionY, rectangleWidth,
-                  rectangleHeight, BLACK);
+    DrawRectangleRec(leftBar, BLACK);
 
     // Ball
 
-    ballCenterPosition =
-        Vector2MoveTowards(ballCenterPosition, ballDestination, 1.0);
-    ball.x = ballCenterPosition.x - ballRadius;
-    ball.y = ballCenterPosition.y - ballRadius;
+    ballTopLeftPosition =
+        Vector2MoveTowards(ballTopLeftPosition, ballDestination, 1.0);
+    ball.x = ballTopLeftPosition.x;
+    ball.y = ballTopLeftPosition.y;
 
-    DrawRectangleRec(ball, GREEN);
+    if (CheckCollisionRecs(ball, leftBar)) {
+      ballColor = RED;
+    } else {
+      ballColor = GREEN;
+    }
 
-    DrawLineV(ballCenterPosition, ballDestination, BLUE);
+    DrawRectangleRec(ball, ballColor);
+
+    DrawLineV(ballTopLeftPosition, ballDestination, BLUE);
 
     EndDrawing();
   }
