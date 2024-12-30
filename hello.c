@@ -18,10 +18,19 @@ int main() {
   // Left Bar
   Rectangle leftBar = {
       .x = 0,
-      .y = 0,
+      .y = (float)GetRandomValue(0, screenHeight - 150),
       .width = 50,
       .height = 150,
   };
+  int leftBarDirection = 1;
+
+  Rectangle rightBar = {
+      .x = (float)screenWidth - 50,
+      .y = (float)GetRandomValue(0, screenHeight - 150),
+      .width = 50,
+      .height = 150,
+  };
+  int rightBarDirection = 1;
 
   // Ball
   const int ballRadius = 25;
@@ -60,11 +69,24 @@ int main() {
              GetScreenHeight() / 2 - fontSize / 2, fontSize, LIGHTGRAY);
 
     // Left bar
-    leftBar.y = leftBar.y + 1;
-    if (leftBar.y > GetScreenHeight()) {
-      leftBar.y = 0;
+    leftBar.y = leftBar.y + leftBarDirection;
+    if (leftBar.y >= GetScreenHeight() - 150) {
+      leftBarDirection = -1;
+    }
+    if (leftBar.y <= 0) {
+      leftBarDirection = 1;
     }
     DrawRectangleRec(leftBar, BLACK);
+
+    // Right bar
+    rightBar.y = rightBar.y + rightBarDirection;
+    if (rightBar.y >= GetScreenHeight() - 150) {
+      rightBarDirection = -1;
+    }
+    if (rightBar.y <= 0) {
+      rightBarDirection = 1;
+    }
+    DrawRectangleRec(rightBar, BLACK);
 
     // Ball
     ballDestination =
