@@ -1,4 +1,5 @@
 #include "raylib.h"
+#include "raymath.h"
 
 int main() {
   // Initialization
@@ -31,14 +32,9 @@ int main() {
       .width = ballRadius * 2,
       .height = ballRadius * 2,
   };
-  // INFO: https://fr.wikipedia.org/wiki/Norme_(math%C3%A9matiques)
-  Vector2 ballDirection = {
+  Vector2 ballDestination = {
       .x = 100,
       .y = 100,
-  };
-  Vector2 ballDestination = {
-      .x = ballCenterPosition.x + ballDirection.x,
-      .y = ballCenterPosition.y + ballDirection.y,
   };
 
   InitWindow(screenWidth, screenHeight, "basic window");
@@ -51,12 +47,12 @@ int main() {
 
     ClearBackground(RAYWHITE);
 
-    DrawText(text, screenWidth / 2 - textWidth / 2,
-             screenHeight / 2 - fontSize / 2, fontSize, LIGHTGRAY);
+    DrawText(text, GetScreenWidth() / 2 - textWidth / 2,
+             GetScreenHeight() / 2 - fontSize / 2, fontSize, LIGHTGRAY);
 
     // Left bar
     rectanglePositionY = rectanglePositionY + 1;
-    if (rectanglePositionY > screenHeight) {
+    if (rectanglePositionY > GetScreenHeight()) {
       rectanglePositionY = 0;
     }
     DrawRectangle(rectanglePositionX, rectanglePositionY, rectangleWidth,
@@ -64,6 +60,8 @@ int main() {
 
     // Ball
 
+    ballCenterPosition =
+        Vector2MoveTowards(ballCenterPosition, ballDestination, 1.0);
     ball.x = ballCenterPosition.x - ballRadius;
     ball.y = ballCenterPosition.y - ballRadius;
 
