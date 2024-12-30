@@ -1,5 +1,6 @@
 #include "raylib.h"
 #include "raymath.h"
+#include <stdbool.h>
 
 int main() {
   // Initialization
@@ -35,12 +36,14 @@ int main() {
       .width = ballRadius * 2,
       .height = ballRadius * 2,
   };
-  // NOTE: I should create a state machine for collisions
+
+  bool ballInCollision = false;
   Color ballColor = GREEN;
-  Vector2 ballDestination = {
-      .x = 45,
-      .y = 100,
+  Vector2 ballDirection = {
+      .x = -1,
+      .y = -1,
   };
+  Vector2 ballDestination;
 
   InitWindow(screenWidth, screenHeight, "basic window");
 
@@ -63,14 +66,34 @@ int main() {
     DrawRectangleRec(leftBar, BLACK);
 
     // Ball
+    ballDestination =
+        Vector2Add(ballTopLeftPosition, Vector2Scale(ballDirection, 100));
 
     ballTopLeftPosition =
         Vector2MoveTowards(ballTopLeftPosition, ballDestination, 1.0);
     ball.x = ballTopLeftPosition.x;
     ball.y = ballTopLeftPosition.y;
 
-    if (CheckCollisionRecs(ball, leftBar)) {
+    ballInCollision = false;
+
+    // Collision with the left bar
+    ballInCollision |= CheckCollisionRecs(ball, leftBar);
+
+    // Left screen collision
+    ballInCollision |= ball.x <= 0;
+
+    // Right screen collision
+    ballInCollision |= ball.x >= screenWidth + 2 * ballRadius;
+
+    // Up screen collision
+    ballInCollision |= ball.y <= 0;
+
+    // Down screen collision
+    ballInCollision |= ball.y >= screenHeight + 2 * ballRadius;
+
+    if (ballInCollision) {
       ballColor = RED;
+      // Vector2Reflect(Vector2 v, Vector2 normal)
     } else {
       ballColor = GREEN;
     }
