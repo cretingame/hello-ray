@@ -44,6 +44,7 @@ int main() {
       .y = -1,
   };
   Vector2 ballDestination;
+  Vector2 ballReflection;
 
   InitWindow(screenWidth, screenHeight, "basic window");
 
@@ -77,23 +78,40 @@ int main() {
     ballInCollision = false;
 
     // Collision with the left bar
-    ballInCollision |= CheckCollisionRecs(ball, leftBar);
+    // ballInCollision |= CheckCollisionRecs(ball, leftBar);
 
     // Left screen collision
-    ballInCollision |= ball.x <= 0;
+    if (ball.x <= 0) {
+      ballInCollision = true;
+      ballReflection.x = 1;
+      ballReflection.y = 0;
+    }
 
     // Right screen collision
-    ballInCollision |= ball.x >= screenWidth + 2 * ballRadius;
+    if (ball.x >= screenWidth - 2 * ballRadius) {
+      ballInCollision = true;
+      ballReflection.x = -1;
+      ballReflection.y = 0;
+    }
 
     // Up screen collision
     ballInCollision |= ball.y <= 0;
+    if (ball.y <= 0) {
+      ballInCollision = true;
+      ballReflection.x = 0;
+      ballReflection.y = -1;
+    }
 
     // Down screen collision
-    ballInCollision |= ball.y >= screenHeight + 2 * ballRadius;
+    if (ball.y >= screenHeight - 2 * ballRadius) {
+      ballInCollision = true;
+      ballReflection.x = 0;
+      ballReflection.y = 1;
+    }
 
     if (ballInCollision) {
       ballColor = RED;
-      // Vector2Reflect(Vector2 v, Vector2 normal)
+      ballDirection = Vector2Reflect(ballDirection, ballReflection);
     } else {
       ballColor = GREEN;
     }
