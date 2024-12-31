@@ -15,22 +15,22 @@ int main() {
       "Hello the text is perfectly centered, but the rectangle not ...";
   int textWidth;
 
-  // Left Bar
-  Rectangle leftBar = {
+  // Left Racket
+  Rectangle lefRacket = {
       .x = 0,
       .y = (float)GetRandomValue(0, screenHeight - 150),
       .width = 50,
       .height = 150,
   };
-  int leftBarDirection = 1;
+  int leftRacketDirection = 1;
 
-  Rectangle rightBar = {
+  Rectangle rightRacket = {
       .x = (float)screenWidth - 50,
       .y = (float)GetRandomValue(0, screenHeight - 150),
       .width = 50,
       .height = 150,
   };
-  int rightBarDirection = 1;
+  int rightRacketDirection = 1;
 
   // Ball
   const int ballRadius = 25;
@@ -55,6 +55,8 @@ int main() {
   Vector2 ballDestination;
   Vector2 ballReflection;
 
+  SetTraceLogLevel(LOG_ALL);
+
   InitWindow(screenWidth, screenHeight, "basic window");
 
   SetTargetFPS(60);
@@ -68,25 +70,25 @@ int main() {
     DrawText(text, GetScreenWidth() / 2 - textWidth / 2,
              GetScreenHeight() / 2 - fontSize / 2, fontSize, LIGHTGRAY);
 
-    // Left bar
-    leftBar.y = leftBar.y + leftBarDirection;
-    if (leftBar.y >= GetScreenHeight() - 150) {
-      leftBarDirection = -1;
+    // Left Racket
+    lefRacket.y = lefRacket.y + leftRacketDirection;
+    if (lefRacket.y >= GetScreenHeight() - 150) {
+      leftRacketDirection = -1;
     }
-    if (leftBar.y <= 0) {
-      leftBarDirection = 1;
+    if (lefRacket.y <= 0) {
+      leftRacketDirection = 1;
     }
-    DrawRectangleRec(leftBar, BLACK);
+    DrawRectangleRec(lefRacket, BLACK);
 
-    // Right bar
-    rightBar.y = rightBar.y + rightBarDirection;
-    if (rightBar.y >= GetScreenHeight() - 150) {
-      rightBarDirection = -1;
+    // Right racket
+    rightRacket.y = rightRacket.y + rightRacketDirection;
+    if (rightRacket.y >= GetScreenHeight() - 150) {
+      rightRacketDirection = -1;
     }
-    if (rightBar.y <= 0) {
-      rightBarDirection = 1;
+    if (rightRacket.y <= 0) {
+      rightRacketDirection = 1;
     }
-    DrawRectangleRec(rightBar, BLACK);
+    DrawRectangleRec(rightRacket, BLACK);
 
     // Ball
     ballDestination =
@@ -99,14 +101,29 @@ int main() {
 
     ballInCollision = false;
 
-    // Collision with the left bar
-    // ballInCollision |= CheckCollisionRecs(ball, leftBar);
+    // Collision with the left racket
+    if (CheckCollisionRecs(ball, lefRacket)) {
+      ballInCollision = true;
+      ballReflection.x = 1;
+      ballReflection.y = 0;
+      TraceLog(LOG_DEBUG, "Left racket collision");
+      // FIXME: Top and bottom collision
+    }
+
+    if (CheckCollisionRecs(ball, rightRacket)) {
+      ballInCollision = true;
+      ballReflection.x = -1;
+      ballReflection.y = 0;
+      TraceLog(LOG_DEBUG, "Right racket collision");
+      // FIXME: Top and bottom collision
+    }
 
     // Left screen collision
     if (ball.x <= 0) {
       ballInCollision = true;
       ballReflection.x = 1;
       ballReflection.y = 0;
+      TraceLog(LOG_DEBUG, "Left screen collision");
     }
 
     // Right screen collision
@@ -114,21 +131,24 @@ int main() {
       ballInCollision = true;
       ballReflection.x = -1;
       ballReflection.y = 0;
+      TraceLog(LOG_DEBUG, "Right screen collision");
     }
 
-    // Up screen collision
+    // Top screen collision
     ballInCollision |= ball.y <= 0;
     if (ball.y <= 0) {
       ballInCollision = true;
       ballReflection.x = 0;
       ballReflection.y = -1;
+      TraceLog(LOG_DEBUG, "Top screen collision");
     }
 
-    // Down screen collision
+    // Bottom screen collision
     if (ball.y >= screenHeight - 2 * ballRadius) {
       ballInCollision = true;
       ballReflection.x = 0;
       ballReflection.y = 1;
+      TraceLog(LOG_DEBUG, "Bottom screen collision");
     }
 
     if (ballInCollision) {
