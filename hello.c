@@ -55,6 +55,8 @@ int main() {
   Vector2 ballDestination;
   Vector2 ballReflection;
 
+  Rectangle collision;
+
   SetTraceLogLevel(LOG_ALL);
 
   InitWindow(screenWidth, screenHeight, "basic window");
@@ -108,6 +110,11 @@ int main() {
       ballReflection.y = 0;
       TraceLog(LOG_DEBUG, "Left racket collision");
       // FIXME: Top and bottom collision
+      collision = GetCollisionRec(ball, lefRacket);
+      // NOTE: I will use collision CheckCollisionLines() to detect where the
+      // collsion commes from. Then I sould plan the collision priority order.
+      // Either I use an "else if" statement or I will place the collision with
+      // the weakest priority first and the strongest last.
     }
 
     if (CheckCollisionRecs(ball, rightRacket)) {
@@ -116,6 +123,7 @@ int main() {
       ballReflection.y = 0;
       TraceLog(LOG_DEBUG, "Right racket collision");
       // FIXME: Top and bottom collision
+      collision = GetCollisionRec(ball, rightRacket);
     }
 
     // Left screen collision
@@ -151,14 +159,15 @@ int main() {
       TraceLog(LOG_DEBUG, "Bottom screen collision");
     }
 
+    DrawRectangleRec(ball, ballColor);
+
     if (ballInCollision) {
       ballColor = RED;
       ballDirection = Vector2Reflect(ballDirection, ballReflection);
+      DrawRectangleRec(collision, BLUE);
     } else {
       ballColor = GREEN;
     }
-
-    DrawRectangleRec(ball, ballColor);
 
     DrawLineV(ballTopLeftPosition, ballDestination, BLUE);
 
