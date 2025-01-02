@@ -16,7 +16,7 @@ int main() {
   int textWidth;
 
   // Left Racket
-  Rectangle lefRacket = {
+  Rectangle leftRacket = {
       .x = 0,
       .y = (float)GetRandomValue(0, screenHeight - 150),
       .width = 50,
@@ -74,14 +74,14 @@ int main() {
              GetScreenHeight() / 2 - fontSize / 2, fontSize, LIGHTGRAY);
 
     // Left Racket
-    lefRacket.y = lefRacket.y + leftRacketDirection;
-    if (lefRacket.y >= GetScreenHeight() - 150 - 3 * ballRadius) {
+    leftRacket.y = leftRacket.y + leftRacketDirection;
+    if (leftRacket.y >= GetScreenHeight() - 150 - 3 * ballRadius) {
       leftRacketDirection = -1;
     }
-    if (lefRacket.y <= 3 * ballRadius) {
+    if (leftRacket.y <= 3 * ballRadius) {
       leftRacketDirection = 1;
     }
-    DrawRectangleRec(lefRacket, BLACK);
+    DrawRectangleRec(leftRacket, BLACK);
 
     // Right racket
     rightRacket.y = rightRacket.y + rightRacketDirection;
@@ -97,13 +97,13 @@ int main() {
     ballInCollision = false;
 
     // Collision with the left racket
-    if (CheckCollisionRecs(ball, lefRacket)) {
+    if (CheckCollisionRecs(ball, leftRacket)) {
       ballInCollision = true;
       // FIXME: Top and bottom collision
-      collision = GetCollisionRec(ball, lefRacket);
+      collision = GetCollisionRec(ball, leftRacket);
 
       if (collision.width > collision.height) {
-        if (ball.y > lefRacket.y) {
+        if (ball.y > leftRacket.y) {
           ballReflection.x = 0;
           ballReflection.y = 1;
           TraceLog(LOG_DEBUG, "Left racket collision on the top");
