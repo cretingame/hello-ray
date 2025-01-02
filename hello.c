@@ -34,6 +34,7 @@ int main() {
 
   // Ball
   const int ballRadius = 25;
+  const int ballSpeed = 1.0;
   // top left postion
   Vector2 ballTopLeftPosition = {
       .x = (float)screenWidth / 2 - ballRadius,
@@ -74,92 +75,97 @@ int main() {
 
     // Left Racket
     lefRacket.y = lefRacket.y + leftRacketDirection;
-    if (lefRacket.y >= GetScreenHeight() - 150) {
+    if (lefRacket.y >= GetScreenHeight() - 150 - 3 * ballRadius) {
       leftRacketDirection = -1;
     }
-    if (lefRacket.y <= 0) {
+    if (lefRacket.y <= 3 * ballRadius) {
       leftRacketDirection = 1;
     }
     DrawRectangleRec(lefRacket, BLACK);
 
     // Right racket
     rightRacket.y = rightRacket.y + rightRacketDirection;
-    if (rightRacket.y >= GetScreenHeight() - 150) {
+    if (rightRacket.y >= GetScreenHeight() - 150 - 3 * ballRadius) {
       rightRacketDirection = -1;
     }
-    if (rightRacket.y <= 0) {
+    if (rightRacket.y <= 3 * ballRadius) {
       rightRacketDirection = 1;
     }
     DrawRectangleRec(rightRacket, BLACK);
 
     // Ball
-    ballDestination =
-        Vector2Add(ballTopLeftPosition, Vector2Scale(ballDirection, 100));
-
-    ballTopLeftPosition =
-        Vector2MoveTowards(ballTopLeftPosition, ballDestination, 1.0);
-    ball.x = ballTopLeftPosition.x;
-    ball.y = ballTopLeftPosition.y;
-
     ballInCollision = false;
 
     // Collision with the left racket
     if (CheckCollisionRecs(ball, lefRacket)) {
       ballInCollision = true;
-      ballReflection.x = 1;
-      ballReflection.y = 0;
-      TraceLog(LOG_DEBUG, "Left racket collision");
       // FIXME: Top and bottom collision
       collision = GetCollisionRec(ball, lefRacket);
-      // NOTE: I will use collision CheckCollisionLines() to detect where the
-      // collsion commes from. Then I sould plan the collision priority order.
-      // Either I use an "else if" statement or I will place the collision with
-      // the weakest priority first and the strongest last.
-    }
 
-    if (CheckCollisionRecs(ball, rightRacket)) {
+      if (collision.width > collision.height) {
+        if (ball.y > lefRacket.y) {
+          ballReflection.x = 0;
+          ballReflection.y = 1;
+          TraceLog(LOG_DEBUG, "Left racket collision on the top");
+        } else {
+          ballReflection.x = 0;
+          ballReflection.y = -1;
+          TraceLog(LOG_DEBUG, "Left racket collision on the bottom");
+        }
+      } else {
+        ballReflection.x = 1;
+        ballReflection.y = 0;
+        TraceLog(LOG_DEBUG, "Left racket collision on the right");
+      }
+    } else if (CheckCollisionRecs(
+                   ball, rightRacket)) { // Collision with the right racket
       ballInCollision = true;
       ballReflection.x = -1;
       ballReflection.y = 0;
       TraceLog(LOG_DEBUG, "Right racket collision");
       // FIXME: Top and bottom collision
       collision = GetCollisionRec(ball, rightRacket);
-    }
-
-    // Left screen collision
-    if (ball.x <= 0) {
+      if (collision.width > collision.height) {
+        if (ball.y > rightRacket.y) {
+          ballReflection.x = 0;
+          ballReflection.y = 1;
+          TraceLog(LOG_DEBUG, "Right racket collision on the top");
+        } else {
+          ballReflection.x = 0;
+          ballReflection.y = -1;
+          TraceLog(LOG_DEBUG, "Right racket collision on the bottom");
+        }
+      } else {
+        ballReflection.x = 1;
+        ballReflection.y = 0;
+        TraceLog(LOG_DEBUG, "Right racket collision on the right");
+      }
+    } else if (ball.x <= 0) { // Left screen collision
       ballInCollision = true;
       ballReflection.x = 1;
       ballReflection.y = 0;
       TraceLog(LOG_DEBUG, "Left screen collision");
-    }
-
-    // Right screen collision
-    if (ball.x >= screenWidth - 2 * ballRadius) {
+    } else if (ball.x >=
+               screenWidth - 2 * ballRadius) { // Right screen collision
       ballInCollision = true;
       ballReflection.x = -1;
       ballReflection.y = 0;
       TraceLog(LOG_DEBUG, "Right screen collision");
-    }
-
-    // Top screen collision
-    ballInCollision |= ball.y <= 0;
-    if (ball.y <= 0) {
+    } else if (ball.y <= 0) { // Top screen collision
       ballInCollision = true;
       ballReflection.x = 0;
       ballReflection.y = -1;
       TraceLog(LOG_DEBUG, "Top screen collision");
-    }
-
-    // Bottom screen collision
-    if (ball.y >= screenHeight - 2 * ballRadius) {
+    } else if (ball.y >=
+               screenHeight - 2 * ballRadius) { // Bottom screen collision
       ballInCollision = true;
       ballReflection.x = 0;
       ballReflection.y = 1;
       TraceLog(LOG_DEBUG, "Bottom screen collision");
+      TraceLog(LOG_DEBUG, "ball.x = %f ball.y = %f", ball.x, ball.y);
+    } else {
+      ballInCollision = false;
     }
-
-    DrawRectangleRec(ball, ballColor);
 
     if (ballInCollision) {
       ballColor = RED;
@@ -169,6 +175,15 @@ int main() {
       ballColor = GREEN;
     }
 
+    ballDestination = Vector2Add(ballTopLeftPosition,
+                                 Vector2Scale(ballDirection, 100 * ballSpeed));
+
+    ballTopLeftPosition =
+        Vector2MoveTowards(ballTopLeftPosition, ballDestination, ballSpeed);
+    ball.x = ballTopLeftPosition.x;
+    ball.y = ballTopLeftPosition.y;
+
+    DrawRectangleRec(ball, ballColor);
     DrawLineV(ballTopLeftPosition, ballDestination, BLUE);
 
     EndDrawing();
