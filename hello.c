@@ -1,8 +1,10 @@
 #include "raylib.h"
 #include "raymath.h"
 #include <stdbool.h>
+#include <time.h>
 
 typedef struct {
+  char *name;
   float speed;
   Rectangle rectangle;
   Color color;
@@ -10,7 +12,10 @@ typedef struct {
 } Ball;
 
 typedef struct {
+  char *name;
   float speed;
+  float upLimit;
+  float downLimit;
   Rectangle rectangle;
   // TODO: enum for paddle direction
   bool direction;
@@ -206,4 +211,33 @@ int main() {
   return 0;
 }
 
-// TODO: function updateBall(), drawBall(), updatePaddle(), drawPaddle()
+Ball updateBall(Ball ball, Paddle paddles[]) {
+  bool inCollision = false;
+  Paddle *paddlePtr = NULL;
+  // TODO: update ball
+  return ball;
+}
+
+void drawBall(Ball ball) { DrawRectangleRec(ball.rectangle, ball.color); }
+
+Paddle updatePaddle(Paddle paddle) {
+  if (paddle.rectangle.y >= paddle.upLimit) {
+    paddle.direction = false;
+  }
+
+  if (paddle.rectangle.y <= paddle.downLimit) {
+    paddle.direction = true;
+  }
+
+  if (paddle.direction == true) {
+    // Moving up
+    paddle.rectangle.y = paddle.rectangle.y - paddle.speed;
+  } else {
+    // Moving Down
+    paddle.rectangle.y = paddle.rectangle.y + paddle.speed;
+  }
+
+  return paddle;
+}
+
+void drawPaddle(Paddle paddle) { DrawRectangleRec(paddle.rectangle, BLACK); }
