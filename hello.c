@@ -2,6 +2,20 @@
 #include "raymath.h"
 #include <stdbool.h>
 
+typedef struct {
+  float speed;
+  Rectangle rectangle;
+  Color color;
+  Vector2 direction;
+} Ball;
+
+typedef struct {
+  float speed;
+  Rectangle rectangle;
+  // TODO: enum for paddle direction
+  bool direction;
+} Paddle;
+
 int main() {
   // Initialization
 
@@ -22,7 +36,7 @@ int main() {
       .width = 50,
       .height = 150,
   };
-  int leftRacketDirection = 1;
+  float leftRacketDirection = 1;
 
   Rectangle rightRacket = {
       .x = (float)screenWidth - 50,
@@ -30,11 +44,11 @@ int main() {
       .width = 50,
       .height = 150,
   };
-  int rightRacketDirection = 1;
+  float rightRacketDirection = 1;
 
   // Ball
-  const int ballRadius = 25;
-  const int ballSpeed = 1.0;
+  const float ballRadius = 25.0;
+  const float ballSpeed = 1.0;
   // top left postion
   Vector2 ballTopLeftPosition = {
       .x = (float)screenWidth / 2 - ballRadius,
@@ -109,7 +123,7 @@ int main() {
           TraceLog(LOG_DEBUG, "Left racket collision on the top");
         } else {
           ballReflection.x = 0;
-          ballReflection.y = -1;
+          ballReflection.y = 1;
           TraceLog(LOG_DEBUG, "Left racket collision on the bottom");
         }
       } else {
@@ -120,7 +134,7 @@ int main() {
     } else if (CheckCollisionRecs(
                    ball, rightRacket)) { // Collision with the right racket
       ballInCollision = true;
-      ballReflection.x = -1;
+      ballReflection.x = 1;
       ballReflection.y = 0;
       TraceLog(LOG_DEBUG, "Right racket collision");
       // FIXME: Top and bottom collision
@@ -132,7 +146,7 @@ int main() {
           TraceLog(LOG_DEBUG, "Right racket collision on the top");
         } else {
           ballReflection.x = 0;
-          ballReflection.y = -1;
+          ballReflection.y = 1;
           TraceLog(LOG_DEBUG, "Right racket collision on the bottom");
         }
       } else {
@@ -148,13 +162,13 @@ int main() {
     } else if (ball.x >=
                screenWidth - 2 * ballRadius) { // Right screen collision
       ballInCollision = true;
-      ballReflection.x = -1;
+      ballReflection.x = 1;
       ballReflection.y = 0;
       TraceLog(LOG_DEBUG, "Right screen collision");
     } else if (ball.y <= 0) { // Top screen collision
       ballInCollision = true;
       ballReflection.x = 0;
-      ballReflection.y = -1;
+      ballReflection.y = 1;
       TraceLog(LOG_DEBUG, "Top screen collision");
     } else if (ball.y >=
                screenHeight - 2 * ballRadius) { // Bottom screen collision
@@ -169,7 +183,7 @@ int main() {
 
     if (ballInCollision) {
       ballColor = RED;
-      ballDirection = Vector2Reflect(ballDirection, ballReflection);
+      // ballDirection = Vector2Reflect(ballDirection, ballReflection);
       DrawRectangleRec(collision, BLUE);
     } else {
       ballColor = GREEN;
@@ -191,3 +205,5 @@ int main() {
 
   return 0;
 }
+
+// TODO: function updateBall(), drawBall(), updatePaddle(), drawPaddle()
