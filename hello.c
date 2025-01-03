@@ -4,7 +4,7 @@
 #include <time.h>
 
 typedef struct {
-  char *name;
+  const char *name;
   float speed;
   Rectangle rectangle;
   Color color;
@@ -12,7 +12,7 @@ typedef struct {
 } Ball;
 
 typedef struct {
-  char *name;
+  const char *name;
   float speed;
   float upLimit;
   float downLimit;
@@ -213,21 +213,97 @@ int main() {
 
 Ball updateBall(Ball ball, Paddle paddleList[]) {
   Paddle *paddlePtr = paddleList;
+  ball.color = GREEN;
   while (paddlePtr != NULL) {
-    // TODO: check for collision with each paddle
     if (CheckCollisionRecs(ball.rectangle, paddlePtr->rectangle)) {
+      ball.color = RED;
       TraceLog(LOG_DEBUG, "collision: %s -> %s", ball.name, paddlePtr->name);
-      // TODO: move ball in case of collsion with a paddle
-      return ball;
+      // Paddle left collision
+      if (ball.rectangle.x < paddlePtr->rectangle.x) {
+        if (ball.direction.x < 0) {
+          ball.direction.x = -ball.direction.x;
+        }
+        TraceLog(LOG_DEBUG, "right collision: %s -> %s", ball.name,
+                 paddlePtr->name);
+      }
+
+      // Paddle right collision
+      if (ball.rectangle.x > paddlePtr->rectangle.x) {
+        if (ball.direction.x > 0) {
+          ball.direction.x = -ball.direction.x;
+        }
+        TraceLog(LOG_DEBUG, "left collision: %s -> %s", ball.name,
+                 paddlePtr->name);
+      }
+
+      // Paddle top collision
+      if (ball.rectangle.y < paddlePtr->rectangle.y) {
+        if (ball.direction.y < 0) {
+          ball.direction.y = -ball.direction.y;
+        }
+        TraceLog(LOG_DEBUG, "top collision: %s -> %s", ball.name,
+                 paddlePtr->name);
+      }
+
+      // Paddle bottom collision
+      if (ball.rectangle.y > paddlePtr->rectangle.y) {
+        if (ball.direction.y > 0) {
+          ball.direction.y = -ball.direction.y;
+        }
+        TraceLog(LOG_DEBUG, "bottom collision: %s -> %s", ball.name,
+                 paddlePtr->name);
+      }
     }
     paddlePtr++;
   }
 
-  // TODO: collision with screen borders
+  // Left screen collision
+  if (ball.rectangle.x <= 0) {
+    ball.color = RED;
+    if (ball.direction.x < 0) {
+      ball.direction.x = -ball.direction.x;
+    }
+    TraceLog(LOG_DEBUG, "collision: %s -> left screen", ball.name);
+  }
 
-  // TODO: usual ball move
+  // Right screen collision
+  if (ball.rectangle.x >= GetScreenWidth() - ball.rectangle.width) {
+    ball.color = RED;
+    if (ball.direction.x > 0) {
+      ball.direction.x = -ball.direction.x;
+    }
+    TraceLog(LOG_DEBUG, "collision: %s -> right screen", ball.name);
+  }
 
-  // TODO: update ball
+  // Top screen collision
+  if (ball.rectangle.y <= 0) {
+    ball.color = RED;
+    if (ball.direction.y < 0) {
+      ball.direction.y = -ball.direction.y;
+    }
+    TraceLog(LOG_DEBUG, "collision: %s -> top screen", ball.name);
+  }
+
+  // Botoom screen collision
+  if (ball.rectangle.y >= GetScreenHeight() - ball.rectangle.height) {
+    ball.color = RED;
+    if (ball.direction.y > 0) {
+      ball.direction.y = -ball.direction.y;
+    }
+    TraceLog(LOG_DEBUG, "collision: %s -> bottom screen", ball.name);
+  }
+
+  Vector2 currentPosition;
+  currentPosition.x = ball.rectangle.x;
+  currentPosition.y = ball.rectangle.y;
+
+  Vector2 target = Vector2Add(currentPosition,
+                              Vector2Scale(ball.direction, 100 * ball.speed));
+
+  target = Vector2MoveTowards(currentPosition, target, ball.speed);
+  ball.rectangle.x = target.x;
+  ball.rectangle.y = target.y;
+
   return ball;
 }
 
