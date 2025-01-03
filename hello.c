@@ -211,9 +211,22 @@ int main() {
   return 0;
 }
 
-Ball updateBall(Ball ball, Paddle paddles[]) {
-  bool inCollision = false;
-  Paddle *paddlePtr = NULL;
+Ball updateBall(Ball ball, Paddle paddleList[]) {
+  Paddle *paddlePtr = paddleList;
+  while (paddlePtr != NULL) {
+    // TODO: check for collision with each paddle
+    if (CheckCollisionRecs(ball.rectangle, paddlePtr->rectangle)) {
+      TraceLog(LOG_DEBUG, "collision: %s -> %s", ball.name, paddlePtr->name);
+      // TODO: move ball in case of collsion with a paddle
+      return ball;
+    }
+    paddlePtr++;
+  }
+
+  // TODO: collision with screen borders
+
+  // TODO: usual ball move
+
   // TODO: update ball
   return ball;
 }
