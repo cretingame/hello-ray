@@ -28,6 +28,9 @@ Ball updateBall(Ball ball, Paddle paddleList[]) {
     if (CheckCollisionRecs(ball.rectangle, paddlePtr->rectangle)) {
       ball.color = RED;
       TraceLog(LOG_DEBUG, "collision: %s -> %s", ball.name, paddlePtr->name);
+      // FIXME: I should add corner collision (top left, top right, bottom left,
+      // bottom right). I might create several booleans ...
+      //
       // Paddle left collision
       if (ball.rectangle.x < paddlePtr->rectangle.x) {
         if (ball.direction.x > 0) {
@@ -212,7 +215,7 @@ int main() {
   const float ballRadius = 25.0;
   Ball ball = {
       .name = "ball",
-      .speed = 1.0,
+      .speed = 2.0,
       .rectangle =
           {
               .x = (float)screenWidth / 2 - ballRadius,
