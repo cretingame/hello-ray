@@ -215,7 +215,7 @@ int main() {
   const float ballRadius = 25.0;
   Ball ball = {
       .name = "ball",
-      .speed = 2.0,
+      .speed = 5.0,
       .rectangle =
           {
               .x = (float)screenWidth / 2 - ballRadius,
